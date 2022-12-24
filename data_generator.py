@@ -13,12 +13,12 @@ Class E: 1280 x 720
 '''
 
 dataset_path = '/home/woody/dataset/DIV2K_train_HR'
-result_path = '/home/woody/dataset/DIV2k_train_'
+result_path = '/home/woody/dataset/DIV2k_train_origin_'
 
 class Data_Generator:
     def __init__(self,dataset_path, result_path, class_name):
         self.dataset_path = dataset_path
-        self.result_path = result_path +'origin_'+class_name
+        self.result_path = result_path +class_name
         self.class_name = class_name 
         self.file_names = []
         self.image = None
