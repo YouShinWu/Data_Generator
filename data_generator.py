@@ -14,15 +14,15 @@ Class E: 1280 x 720
 
 dataset_path = '/home/woody/dataset/DIV2K_train_HR'
 result_path = '/home/woody/dataset/DIV2k_train_origin_'
+ffmpeg = '/usr/local/bin/ffmpeg-5.1.1/ffmpeg'
 
 class Data_Generator:
-    def __init__(self,dataset_path, result_path, class_name):
+    def __init__(self,dataset_path, result_path, class_name, to_yuv420_flag):
         self.dataset_path = dataset_path
         self.result_path = result_path +class_name
         self.class_name = class_name 
         self.file_names = []
-        self.image = None
-        self.name = None
+        self.to_yuv420 = to_yuv420_flag
         self.get_all_files()
         self.create_dir()
         print('Create Data Generator:')
@@ -48,6 +48,11 @@ class Data_Generator:
             write_path = join(self.result_path,file)
             print('Write image to {}'.format(write_path))
             cv2.imwrite(write_path,image)
+            if self.to_yuv420:
+                name = file.split('.')[0]
+                yuv = join(self.result_path,name+'.yuv')
+                print('Convert to yuv {}'.format(yuv))
+                os.system('{} -i {} -pix_fmt yuv420p {}'.format(ffmpeg, write_path, yuv))
     
     def create_dir(self):    
         if exists(self.result_path):
@@ -59,7 +64,7 @@ class Data_Generator:
             return True
     
 if __name__ == '__main__':
-    generator = Data_Generator(dataset_path, result_path, 'D')
+    generator = Data_Generator(dataset_path, result_path, 'D', 1)
 
 
 
