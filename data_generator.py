@@ -26,9 +26,8 @@ class Data_Generator:
         self.get_all_files()
         self.create_dir()
         print('Create Data Generator:')
-        print('Dataset path: {}'.format(self.dataset_path))
-        print('Result path: {}'.format(self.result_path))
-        self.resize_and_write_img()
+        print(f'Dataset path: {self.dataset_path}')
+        print(f'Result path: {self.result_path}')
 
     def get_all_files(self):
         print('Get dataset path {}'.format(self.dataset_path))
@@ -42,29 +41,35 @@ class Data_Generator:
         size = class_table[self.class_name]
         for file in self.file_names:
             image_path = join(self.dataset_path,file)
-            print('Resize {}'.format(image_path))
+            print(f'Resize {image_path}')
             image = cv2.imread(image_path)
             image = cv2.resize(image, size,interpolation=cv2.INTER_AREA)
             write_path = join(self.result_path,file)
-            print('Write image to {}'.format(write_path))
+            print(f'Write image to {write_path}')
             cv2.imwrite(write_path,image)
             if self.to_yuv420:
                 name = file.split('.')[0]
                 yuv = join(self.result_path,name+'.yuv')
-                print('Convert to yuv {}'.format(yuv))
-                os.system('{} -i {} -pix_fmt yuv420p {}'.format(ffmpeg, write_path, yuv))
+                print(f'Convert to yuv {yuv}')
+                os.system(f'{ffmpeg} -i {write_path} -pix_fmt yuv420p {yuv}')
     
     def create_dir(self):    
         if exists(self.result_path):
-            print("{} exist".format(self.result_path))
+            print(f"{self.result_path} exist")
             return True
         else:
-            print("mkdir {}".format(self.result_path))
+            print(f"mkdir {self.result_path}")
             os.mkdir(self.result_path)
             return True
     
+
+def main() -> None:
+    generator = Data_Generator(dataset_path, result_path, 'C', 1)
+    generator.resize_and_write_img()
+
 if __name__ == '__main__':
-    generator = Data_Generator(dataset_path, result_path, 'D', 1)
+    main()
+   
 
 
 
