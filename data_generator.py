@@ -30,7 +30,7 @@ class Data_Generator:
         print(f'Result path: {self.result_path}')
 
     def get_all_files(self):
-        print('Get dataset path {}'.format(self.dataset_path))
+        print(f'Get dataset path {self.dataset_path}')
         only_files = [f for f in listdir(self.dataset_path) if isfile(join(self.dataset_path, f))]
         only_files.sort()
         self.file_names = only_files
