@@ -13,7 +13,8 @@ Class E: 1280 x 720
 '''
 
 dataset_path = '/home/woody/dataset/DIV2K_train_HR'
-result_path = '/home/woody/dataset/DIV2k_train_origin_'
+# result_path = '/home/woody/dataset/DIV2k_train_origin_'
+result_path = '/home/woody/dataset/training_data/Class_'
 ffmpeg = '/usr/local/bin/ffmpeg-5.1.1/ffmpeg'
 
 class Data_Generator:
@@ -62,10 +63,45 @@ class Data_Generator:
             os.mkdir(self.result_path)
             return True
     
+    def extract_yuv_component(self):
+        class_table = {'A':'3840x2160','B':'1920x1080','C':'832x480', 'D':'416x240', 'E':'1280x720'}
+        yuv_files = [f for f in os.listdir(self.result_path) if f.endswith('.yuv')]
+        # print(png)
+        yuv_files.sort()
+        for yuv in yuv_files:
+            image_path = os.path.join(self.result_path,yuv)
+            print(image_path)
+            file_name = yuv.split('.')[0]
+            y_path = os.path.join(self.result_path,f"{file_name}_y_.png")
+            u_path = os.path.join(self.result_path,f"{file_name}_u_.png")
+            v_path = os.path.join(self.result_path,f"{file_name}_v_.png")
+            size = class_table[self.class_name]
+            command = f"{ffmpeg} -y -f rawvideo -s {size} -i {image_path} -filter_complex 'extractplanes=y+u+v[y][u][v]' -map '[y]' {y_path} -map '[u]' {u_path} -map '[v]' {v_path}"
+            print(command)
+            os.system(command)
+        
+    def extract_yuv420p10le_component(self):
+        class_table = {'A':'3840x2160','B':'1920x1080','C':'832x480', 'D':'416x240', 'E':'1280x720'}
+        yuv_files = [f for f in os.listdir(self.result_path) if f.endswith('.yuv')]
+        # print(png)
+        yuv_files.sort()
+        for yuv in yuv_files:
+            image_path = os.path.join(self.result_path,yuv)
+            print(image_path)
+            file_name = yuv.split('.')[0]
+            y_path = os.path.join(self.result_path,f"{file_name}_extract_y_.png")
+            u_path = os.path.join(self.result_path,f"{file_name}_extract_u_.png")
+            v_path = os.path.join(self.result_path,f"{file_name}_extract_v_.png")
+            size = class_table[self.class_name]
+            command = f"{ffmpeg} -y -f rawvideo -s {size} -pix_fmt yuv420p10le -i {image_path} -filter_complex 'extractplanes=y+u+v[y][u][v]' -map '[y]' {y_path} -map '[u]' {u_path} -map '[v]' {v_path}"
+            # print(command)
+            os.system(command)
+    
 
 def main() -> None:
-    generator = Data_Generator(dataset_path, result_path, 'C', 1)
-    generator.resize_and_write_img()
+    generator = Data_Generator(dataset_path, result_path, 'D', 0)
+    # generator.resize_and_write_img()
+    generator.extract_yuv_component()
 
 if __name__ == '__main__':
     main()
